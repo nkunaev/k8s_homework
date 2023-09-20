@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 250m
+              memory: 125Mi
+            limits:
+              cpu: 500m
+              memory: 250Mi
+          ports:
+            - containerPort: 80
+        - name: multitool
+          image: wbitt/network-multitool
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HTTP_PORT
+              value: "8080"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 125Mi
+            limits:
+              cpu: 500m
+              memory: 250Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kunaev-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+
