@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web
+  name: echo-request
+spec:
+  containers:
+  - name: kunaev-hw
+    image: gcr.io/kubernetes-e2e-test-images/echoserver:2.2
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "500m"
+      limits:
+        memory: "128Mi"
+        cpu: "1"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kunaev-service
+spec:
+  selector:
+    app: web
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8080
