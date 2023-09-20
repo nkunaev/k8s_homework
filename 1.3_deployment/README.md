@@ -13,11 +13,12 @@
 ![Alt text](img/image-2.png)
 
 ![Alt text](img/image-3.png)
+
 5. Создать отдельный Pod с приложением multitool и убедиться с помощью `curl`, что из пода есть доступ до приложений из п.1.
 ![Alt text](img/image-4.png)
 
 ## Manifesto 
-[deployment+service](deployment.yaml)
+[deployment+service](deployment.yaml)  
 [single_pod](single_pod.yaml)
 ------
 
@@ -32,5 +33,5 @@
 ![Alt text](img/image-7.png)
 
 ## Manifesto
-[nginx](dep-nginx.yaml)
+[nginx](dep-nginx.yaml)  
 [service](dep-service.yaml)
