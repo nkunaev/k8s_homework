@@ -2,22 +2,24 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: localhost
+    - host: homelab.com
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: kunaev-svc
+                name: frontend-svc
                 port:
                   name: frontend
           - path: /api
             pathType: Prefix
             backend:
               service:
-                name: kunaev-svc
+                name: backend-svc
                 port:
                   name: backend
