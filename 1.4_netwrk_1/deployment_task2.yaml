@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kunaev-svc-node
+spec:
+  selector:
+    app: myapp
+  ports:
+    - name: nginx
+      protocol: TCP
+      port: 80
+      nodePort: 30080
+    - name: multitool
+      protocol: TCP
+      port: 8080
+      nodePort: 31080
+  type: NodePort
