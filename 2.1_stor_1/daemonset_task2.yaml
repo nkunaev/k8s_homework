@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: logs
+  labels:
+    app: logs
+spec:
+  selector:
+    matchLabels:
+      app: logs
+  template:
+    metadata:
+      labels:
+        app: logs
+    spec:
+      containers:
+        - name: busybox
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command: ['sleep', '1000']
+          volumeMounts:
+          - name: syslog
+            mountPath: /logs
+          resources:
+            requests:
+              cpu: 250m
+              memory: 125Mi
+            limits:
+              cpu: 500m
+              memory: 250Mi
+      volumes:
+      - name: syslog
+        hostPath:
+          path: /var/log
