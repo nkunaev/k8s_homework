@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busybox-multitool
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: busybox
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command: ['sh', '-c', 'while true; do date >> /output/hello; sleep 5; done']
+          volumeMounts:
+          - name: volume
+            mountPath: /output
+          resources:
+            requests:
+              cpu: 250m
+              memory: 125Mi
+            limits:
+              cpu: 500m
+              memory: 250Mi
+        - name: multitool
+          image: wbitt/network-multitool:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HTTP_PORT
+              value: "8080"
+          volumeMounts:
+          - name: volume
+            mountPath: /input
+          resources:
+            requests:
+              cpu: 250m
+              memory: 125Mi
+            limits:
+              cpu: 500m
+              memory: 250Mi
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: pvc
