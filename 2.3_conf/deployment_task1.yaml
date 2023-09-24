@@ -33,7 +33,10 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: HTTP_PORT
-              value: "8080"
+              valueFrom:
+                configMapKeyRef:
+                  name: my-configmap
+                  key: HTTP_PORT
           resources:
             requests:
               cpu: 250m
