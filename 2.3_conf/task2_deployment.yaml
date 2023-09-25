@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: custom-web-page
+              mountPath: /var/www/mypage
+            - name: my-nginx-conf
+              mountPath: /etc/nginx/conf.d
+          resources:
+            requests:
+              cpu: 250m
+              memory: 125Mi
+            limits:
+              cpu: 500m
+              memory: 250Mi
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: custom-web-page
+          configMap:
+            name: my-configmap
+            items:
+            - key: CUSTOM_WEB_PAGE
+              path: custom.html
+        - name: my-nginx-conf
+          configMap:
+            name: my-configmap
+            items:
+            - key: NGINX_CONF
+              path: default.conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kunaev-svc
+spec:
+  selector:
+    app: myapp
+  ports:
+    - name: nginx
+      protocol: TCP
+      port: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: homelab.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kunaev-svc
+                port:
+                  name: nginx
+  tls:
+    - hosts:
+      - homelab.com
+      secretName: tls-secret

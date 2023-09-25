@@ -19,6 +19,11 @@ spec:
         - name: nginx
           image: nginx:1.14.2
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: custom-web-page
+              mountPath: /var/www/mypage
+            - name: my-nginx-conf
+              mountPath: /etc/nginx/conf.d
           resources:
             requests:
               cpu: 250m
@@ -44,6 +49,19 @@ spec:
             limits:
               cpu: 500m
               memory: 250Mi
+      volumes:
+        - name: custom-web-page
+          configMap:
+            name: my-configmap
+            items:
+            - key: CUSTOM_WEB_PAGE
+              path: custom.html
+        - name: my-nginx-conf
+          configMap:
+            name: my-configmap
+            items:
+            - key: NGINX_CONF
+              path: default.conf
 
 ---
 apiVersion: v1

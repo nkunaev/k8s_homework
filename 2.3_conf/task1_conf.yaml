@@ -5,4 +5,43 @@ metadata:
   namespace: default
 data:
   HTTP_PORT: "8080"
+  CUSTOM_WEB_PAGE: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Here's Jhony!</title>
+    <style>
+        body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+        }
+    </style>
+    </head>
+    <body>
+    <h1>Welcome to my custom page!</h1>
+    </body>
+    </html>
+  NGINX_CONF: |
+    server {
+        listen       80;
+        server_name  localhost;
+        disable_symlinks off;
 
+        #charset koi8-r;
+        #access_log  /var/log/nginx/host.access.log  main;
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+
+        location /mypage {
+            root /var/www;
+        }
+    }
