@@ -1,0 +1,9 @@
+apiVersion: v2
+name: myapp
+description: A Helm chart for my Microk8s
+
+type: application
+
+version: 0.1.3
+
+appVersion: "1.19.0"
