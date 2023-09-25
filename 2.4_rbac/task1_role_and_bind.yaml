@@ -1,0 +1,26 @@
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: nemo
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "watch", "list"]
+
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+  namespace: nemo
+subjects:
+- kind: User
+  name: nemo
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io

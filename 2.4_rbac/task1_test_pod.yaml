@@ -5,6 +5,7 @@ metadata:
   labels:
     app: multitool
   name: multitool
+  namespace: nemo
 spec:
   containers:
   - name: standalone-multitool
