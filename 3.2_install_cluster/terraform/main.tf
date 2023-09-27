@@ -8,19 +8,40 @@ variable "vm_resources_list" {
   }))
   default = [
     {
-      vm_name       = "vm-1"
+      vm_name       = "kube-master-1"
       cpu           = 2
-      ram           = 4
-      disk          = 1
+      ram           = 6
+      disk          = 50
       core_fraction = 20
 
     },
     {
-      vm_name       = "vm-2"
+      vm_name       = "kube-worker-1"
       cpu           = 2
-      ram           = 2
-      disk          = 3
-      core_fraction = 5
+      ram           = 4
+      disk          = 30
+      core_fraction = 20
+    },
+    {
+      vm_name       = "kube-worker-2"
+      cpu           = 2
+      ram           = 4
+      disk          = 50
+      core_fraction = 20
+    },
+    {
+      vm_name       = "kube-worker-3"
+      cpu           = 2
+      ram           = 4
+      disk          = 50
+      core_fraction = 20
+    },
+    {
+      vm_name       = "kube-worker-4"
+      cpu           = 2
+      ram           = 4
+      disk          = 50
+      core_fraction = 20
     },
   ]
   description = "There's list if dict's with VM resources"
@@ -43,11 +64,12 @@ resource "yandex_compute_instance" "vm_for_each" {
     cores         = each.value.cpu
     memory        = each.value.ram
     core_fraction = each.value.core_fraction
-
+    
   }
   boot_disk {
     initialize_params {
       image_id = data.yandex_compute_image.ubuntu.image_id
+      size = each.value.disk
     }
   }
   scheduling_policy {
