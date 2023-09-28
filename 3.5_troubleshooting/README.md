@@ -29,3 +29,5 @@ microk8s kubectl create ns data
 curl запрос к сервису
 
 ![Alt text](image-1.png)
+
+[manifest](deployment.yaml)
