@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache-multitool
+  namespace: app
+  labels:
+    app: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache
+  template:
+    metadata:
+      labels:
+        app: cache
+    spec:
+      containers:
+        - name: multitool
+          image: wbitt/network-multitool
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HTTP_PORT
+              value: "80"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 125Mi
+            limits:
+              cpu: 500m
+              memory: 250Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: app
+  name: cache-svc
+spec:
+  selector:
+    app: cache
+  ports:
+    - name: multitool
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
