@@ -123,7 +123,7 @@ resource "yandex_mdb_mysql_database" "netology_db" {
   name       = "netology_db"
 }
 
-resource "yandex_mdb_mysql_user" "<имя пользователя>" {
+resource "yandex_mdb_mysql_user" "db-user" {
   cluster_id = yandex_mdb_mysql_cluster.mysql-cluster.id
   name       = "awesome-user"
   password   = "awesome-password"
@@ -134,14 +134,69 @@ resource "yandex_mdb_mysql_user" "<имя пользователя>" {
 }
 ```
 
+![Alt text](image-1.png)
 
 2. Настроить с помощью Terraform кластер Kubernetes.
 
  - Используя настройки VPC из предыдущих домашних заданий, добавить дополнительно две подсети public в разных зонах, чтобы обеспечить отказоустойчивость.
+
+![Alt text](image-2.png)
+
  - Создать отдельный сервис-аккаунт с необходимыми правами. 
+![Alt text](image-3.png)
+
  - Создать региональный мастер Kubernetes с размещением нод в трёх разных подсетях.
+```HCL
+resource "yandex_kubernetes_cluster" "k8s-regional" {
+...
+    regional {
+      region = "ru-central1"
+      location {
+        zone      = yandex_vpc_subnet.public-zone-a.zone
+        subnet_id = yandex_vpc_subnet.public-zone-a.id
+      }
+      location {
+        zone      = yandex_vpc_subnet.public-zone-b.zone
+        subnet_id = yandex_vpc_subnet.public-zone-b.id
+      }
+      location {
+        zone      = yandex_vpc_subnet.public-zone-c.zone
+        subnet_id = yandex_vpc_subnet.public-zone-c.id
+      }
+    }
+...
+}
+
+```
+
  - Добавить возможность шифрования ключом из KMS, созданным в предыдущем домашнем задании.
+```HCL
+resource "yandex_kubernetes_cluster" "k8s-regional" {
+...
+  kms_provider {
+    key_id = yandex_kms_symmetric_key.s3-key.id
+  }
+...
+}
+
+```
+
  - Создать группу узлов, состояющую из трёх машин с автомасштабированием до шести.
+ ```HCL
+ resource "yandex_kubernetes_node_group" "worker-instances" {
+...
+
+  scale_policy {
+    auto_scale {
+      initial = 3
+      max     = 6
+      min     = 3
+    }
+  }
+...
+ }
+ 
+ ```
  - Подключиться к кластеру с помощью `kubectl`.
- - *Запустить микросервис phpmyadmin и подключиться к ранее созданной БД.
- - *Создать сервис-типы Load Balancer и подключиться к phpmyadmin. Предоставить скриншот с публичным адресом и подключением к БД.
+
+![![Alt text](image-4.png)](image-4.png)

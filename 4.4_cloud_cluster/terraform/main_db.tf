@@ -1,10 +1,10 @@
 resource "yandex_mdb_mysql_cluster" "mysql-cluster" {
-  name        = "my-db"
-  environment = "PRESTABLE"
-  network_id  = yandex_vpc_network.my-network.id
-  version     = "8.0"
-  deletion_protection = true
-  security_group_ids = [ "yandex_vpc_security_group.default_security_group.id" ]
+  name                = "my-db"
+  environment         = "PRESTABLE"
+  network_id          = yandex_vpc_network.my-network.id
+  version             = "8.0"
+  deletion_protection = false
+  security_group_ids  = [yandex_vpc_security_group.default_security_group.id]
 
   resources {
     resource_preset_id = "b1.medium"
@@ -17,25 +17,25 @@ resource "yandex_mdb_mysql_cluster" "mysql-cluster" {
   }
 
   backup_window_start {
-    hours = 23
+    hours   = 23
     minutes = 59
   }
 
   host {
-    zone      = "ru-central1-a"
-    subnet_id = yandex_vpc_subnet.private-zone-a.id
+    zone             = "ru-central1-a"
+    subnet_id        = yandex_vpc_subnet.private-zone-a.id
     assign_public_ip = false
   }
 
   host {
-    zone      = "ru-central1-b"
-    subnet_id = yandex_vpc_subnet.private-zone-b.id
+    zone             = "ru-central1-b"
+    subnet_id        = yandex_vpc_subnet.private-zone-b.id
     assign_public_ip = false
   }
 
-    host {
-    zone      = "ru-central1-c"
-    subnet_id = yandex_vpc_subnet.private-zone-c.id
+  host {
+    zone             = "ru-central1-c"
+    subnet_id        = yandex_vpc_subnet.private-zone-c.id
     assign_public_ip = false
   }
 }
@@ -45,7 +45,7 @@ resource "yandex_mdb_mysql_database" "netology_db" {
   name       = "netology_db"
 }
 
-resource "yandex_mdb_mysql_user" "<имя пользователя>" {
+resource "yandex_mdb_mysql_user" "db-user" {
   cluster_id = yandex_mdb_mysql_cluster.mysql-cluster.id
   name       = "awesome-user"
   password   = "awesome-password"
