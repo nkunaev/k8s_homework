@@ -55,3 +55,6 @@ resource "yandex_storage_bucket" "test" {
  - в качестве результата предоставить скриншот на страницу с сертификатом в заголовке (замочек).
 
 ![Alt text](image-2.png)
+
+
+[tf source](terraform)
