@@ -200,3 +200,5 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
  - Подключиться к кластеру с помощью `kubectl`.
 
 ![![Alt text](image-4.png)](image-4.png)
+
+[terraform src](terraform)
