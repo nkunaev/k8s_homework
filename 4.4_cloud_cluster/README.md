@@ -143,6 +143,7 @@ resource "yandex_mdb_mysql_user" "db-user" {
 ![Alt text](image-2.png)
 
  - Создать отдельный сервис-аккаунт с необходимыми правами. 
+ 
 ![Alt text](image-3.png)
 
  - Создать региональный мастер Kubernetes с размещением нод в трёх разных подсетях.
