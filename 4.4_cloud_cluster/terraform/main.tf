@@ -1,69 +1,56 @@
-#####################
-# IMAGE DESCRIPTION #
-#####################
+resource "yandex_mdb_mysql_cluster" "mysql-cluster" {
+  name        = "my-db"
+  environment = "PRESTABLE"
+  network_id  = yandex_vpc_network.my-network.id
+  version     = "8.0"
+  deletion_protection = true
+  security_group_ids = [ "yandex_vpc_security_group.default_security_group.id" ]
 
-data "yandex_compute_image" "lamp" {
-  family = "lamp"
+  resources {
+    resource_preset_id = "b1.medium"
+    disk_type_id       = "network-ssd"
+    disk_size          = 20
+  }
+
+  maintenance_window {
+    type = "ANYTIME"
+  }
+
+  backup_window_start {
+    hours = 23
+    minutes = 59
+  }
+
+  host {
+    zone      = "ru-central1-a"
+    subnet_id = yandex_vpc_subnet.private-zone-a.id
+    assign_public_ip = false
+  }
+
+  host {
+    zone      = "ru-central1-b"
+    subnet_id = yandex_vpc_subnet.private-zone-b.id
+    assign_public_ip = false
+  }
+
+    host {
+    zone      = "ru-central1-c"
+    subnet_id = yandex_vpc_subnet.private-zone-c.id
+    assign_public_ip = false
+  }
 }
 
+resource "yandex_mdb_mysql_database" "netology_db" {
+  cluster_id = yandex_mdb_mysql_cluster.mysql-cluster.id
+  name       = "netology_db"
+}
 
-####################
-# VM CONFIGURATION #
-####################
-
-resource "yandex_compute_instance_group" "lamp-instance" {
-  name = "lamp"
-
-  folder_id          = data.yandex_resourcemanager_folder.default.id
-  service_account_id = data.yandex_iam_service_account.service-account.id
-
-  deletion_protection = false
-  instance_template {
-    platform_id = "standard-v1"
-    resources {
-      core_fraction = 20
-      memory        = 4
-      cores         = 2
-    }
-
-    boot_disk {
-      initialize_params {
-        image_id = data.yandex_compute_image.lamp.image_id
-      }
-    }
-    scheduling_policy {
-      preemptible = true
-    }
-    network_interface {
-      subnet_ids          = ["${yandex_vpc_subnet.public.id}"]
-      nat                = true
-      security_group_ids = ["${yandex_vpc_security_group.default_security_group.id}"]
-    }
-
-    metadata = {
-      ssh-keys = "kunaev:${file("~/.ssh/id_rsa.pub")}"
-      user_data = file("${path.module}/main_page.sh")
-    }
-
-    network_settings {
-      type = "STANDARD"
-    }
-  }
-
-  scale_policy {
-    fixed_scale {
-      size = 3
-    }
-  }
-
-  allocation_policy {
-    zones = ["ru-central1-a"]
-  }
-
-  deploy_policy {
-    max_unavailable = 2
-    max_creating    = 3
-    max_expansion   = 2
-    max_deleting    = 3
+resource "yandex_mdb_mysql_user" "<имя пользователя>" {
+  cluster_id = yandex_mdb_mysql_cluster.mysql-cluster.id
+  name       = "awesome-user"
+  password   = "awesome-password"
+  permission {
+    database_name = "netology_db"
+    roles         = ["ALL"]
   }
 }
